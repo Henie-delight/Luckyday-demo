@@ -29,9 +29,24 @@
             font-family: 'Pretendard', -apple-system, sans-serif;
             background: #F5F5F5;
             color: var(--text-dark);
-            overflow: hidden;
             margin: 0;
-            padding: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 로딩 페이지 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         /* 로딩 페이지 */
@@ -42,79 +57,71 @@
             width: 100%;
             height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             background: linear-gradient(135deg, #E8F5E9 0%, #FFFEF7 100%);
             z-index: 10000;
-            transition: opacity 0.5s ease, transform 0.5s ease;
+            transition: opacity 0.5s ease;
+            padding: 20px;
         }
 
         .loading-page.hide {
             opacity: 0;
-            transform: scale(1.1);
             pointer-events: none;
+        }
+
+        .loading-container {
+            width: 100%;
+            max-width: 393px;
+            height: 852px;
+            position: relative;
+            background: linear-gradient(135deg, #E8F5E9 0%, #FFFEF7 100%);
+            box-shadow: 0 0 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
         }
 
         .loading-image {
             width: 100%;
-            max-width: 600px;
-            height: auto;
-            object-fit: contain;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
             animation: fadeInScale 1s ease-out;
+            transition: transform 0.3s ease;
+        }
+
+        .loading-image:hover {
+            transform: scale(1.02);
+        }
+
+        /* 이미지 로드 실패 시 대체 텍스트 */
+        .loading-fallback {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: var(--clover-green);
+            font-family: 'Gowun Batang', serif;
+            pointer-events: none;
+        }
+
+        .loading-fallback-title {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .loading-fallback-subtitle {
+            font-size: 18px;
+            color: var(--text-gray);
         }
 
         @keyframes fadeInScale {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .enter-btn {
-            position: absolute;
-            bottom: 15%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            color: var(--clover-green);
-            border: 3px solid var(--clover-green);
-            padding: 16px 48px;
-            border-radius: 50px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 16px rgba(45, 122, 79, 0.3);
-            animation: floatButton 2s ease-in-out infinite;
-        }
-
-        @keyframes floatButton {
-            0%, 100% {
-                transform: translateX(-50%) translateY(0);
-            }
-            50% {
-                transform: translateX(-50%) translateY(-8px);
-            }
-        }
-
-        .enter-btn:hover {
-            background: var(--clover-green);
-            color: white;
-            transform: translateX(-50%) scale(1.05);
-            box-shadow: 0 6px 20px rgba(45, 122, 79, 0.4);
-            animation: none;
-        }
-
-        .enter-btn:active {
-            transform: translateX(-50%) scale(0.98);
-        }
-
-        @keyframes fadeIn {
             from {
                 opacity: 0;
                 transform: scale(0.95);
@@ -129,10 +136,11 @@
             position: relative;
             width: 100%;
             max-width: 393px;
-            height: 100vh;
+            height: 852px;
             margin: 0 auto;
             background: white;
             box-shadow: 0 0 40px rgba(0,0,0,0.1);
+            border-radius: 0;
         }
 
         .mockup-notch {
@@ -193,7 +201,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
             margin-bottom: 12px;
         }
 
@@ -213,6 +220,12 @@
             font-size: 32px;
             font-weight: 700;
             color: var(--clover-green);
+        }
+
+        .app-title-image {
+            height: 45px;
+            width: auto;
+            filter: drop-shadow(0 2px 8px rgba(45, 122, 79, 0.3));
         }
 
         .tagline {
@@ -857,7 +870,23 @@
 
         /* 반응형 */
         @media (max-width: 450px) {
+            body {
+                padding: 0;
+            }
+
             .mockup-container {
+                max-width: 100%;
+                height: 100vh;
+                box-shadow: none;
+            }
+
+            .loading-page {
+                padding: 0;
+            }
+
+            .loading-container {
+                max-width: 100%;
+                height: 100vh;
                 box-shadow: none;
             }
         }
@@ -878,10 +907,13 @@
 <body>
     <!-- 로딩 페이지 -->
     <div class="loading-page" id="loadingPage">
-        <img src="luckyday-loading.png" alt="럭키데이" class="loading-image">
-        <button class="enter-btn" onclick="enterApp()">
-            입장하기 🍀
-        </button>
+        <div class="loading-container">
+            <img src="luckyday-loading.png" alt="럭키데이" class="loading-image" id="loadingImage">
+            <div class="loading-fallback" style="display: none;" id="loadingFallback">
+                <div class="loading-fallback-title">🍀 럭키데이</div>
+                <div class="loading-fallback-subtitle">클릭하여 시작하기</div>
+            </div>
+        </div>
     </div>
 
     <!-- 앱 메인 화면 -->
@@ -892,8 +924,7 @@
             <div class="screen home-screen active" id="homeScreen">
                 <div class="header">
                     <div class="logo-container">
-                        <span class="clover-logo">🍀</span>
-                        <h1 class="app-title">럭키데이</h1>
+                        <img src="luckyday-logo.png" alt="럭키데이" class="app-title-image">
                     </div>
                     <p class="tagline">당신의 행운이 누군가의 행운이 됩니다</p>
                 </div>
@@ -1182,25 +1213,73 @@
     <script>
         let currentCategory = '';
 
-        // 앱 입장하기
-        function enterApp() {
+        // 로딩 페이지에서 앱으로 진입
+        window.addEventListener('load', () => {
             const loadingPage = document.getElementById('loadingPage');
+            const loadingImage = document.getElementById('loadingImage');
+            const loadingFallback = document.getElementById('loadingFallback');
             const appContainer = document.getElementById('appContainer');
-            
-            // 로딩 페이지 페이드아웃
-            loadingPage.classList.add('hide');
-            
-            // 앱 컨테이너 표시
-            setTimeout(() => {
-                loadingPage.style.display = 'none';
-                appContainer.style.display = 'block';
+
+            if (!loadingPage || !appContainer) {
+                console.error('로딩 요소를 찾을 수 없습니다.');
+                return;
+            }
+
+            // 이미지 로드 에러 처리
+            if (loadingImage) {
+                loadingImage.onerror = () => {
+                    console.warn('로딩 이미지를 불러올 수 없습니다.');
+                    loadingImage.style.display = 'none';
+                    if (loadingFallback) {
+                        loadingFallback.style.display = 'block';
+                    }
+                };
+
+                // 마우스 커서 변경
+                loadingImage.style.cursor = 'pointer';
+                loadingImage.addEventListener('click', enterApp);
+            }
+
+            // 앱 진입 함수
+            function enterApp() {
+                loadingPage.classList.add('hide');
                 
-                // 앱 등장 애니메이션
                 setTimeout(() => {
-                    appContainer.style.opacity = '0';
-                    appContainer.style.animation = 'fadeIn 0.5s ease-out forwards';
-                }, 10);
-            }, 500);
+                    loadingPage.style.display = 'none';
+                    appContainer.style.display = 'block';
+                    appContainer.style.animation = 'fadeIn 0.6s ease-out';
+                    
+                    // 카운트업 시작
+                    setTimeout(startCountUp, 100);
+                }, 500);
+            }
+            
+            // 로딩 컨테이너 전체 클릭 가능
+            const loadingContainer = document.querySelector('.loading-container');
+            if (loadingContainer) {
+                loadingContainer.addEventListener('click', enterApp);
+            }
+        });
+
+        // 숫자 카운트업
+        function startCountUp() {
+            const poolAmount = document.getElementById('poolAmount');
+            const targetNumber = 12700;
+            let currentNumber = 0;
+            const duration = 1500;
+            const increment = targetNumber / (duration / 16);
+
+            const countUp = () => {
+                if (currentNumber < targetNumber) {
+                    currentNumber += increment;
+                    poolAmount.textContent = Math.floor(currentNumber).toLocaleString();
+                    requestAnimationFrame(countUp);
+                } else {
+                    poolAmount.textContent = targetNumber.toLocaleString();
+                }
+            };
+
+            countUp();
         }
 
         function showScreen(screenName) {
@@ -1283,7 +1362,7 @@
             const poolAmount = document.getElementById('poolAmount');
             const targetNumber = 12700;
             let currentNumber = 0;
-            const duration = 2000;
+            const duration = 1500;
             const increment = targetNumber / (duration / 16);
 
             const countUp = () => {
@@ -1296,7 +1375,7 @@
                 }
             };
 
-            setTimeout(countUp, 500);
+            countUp();
         });
 
         // 캘린더 날짜 클릭시 일기로 이동
